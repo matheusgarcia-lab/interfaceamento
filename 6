@@ -1,0 +1,25 @@
+import numpy as np
+# Equação MAPE solicitada
+def calcular_mape(y_true, y_pred):
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+
+# Lógica da previsão recursiva (Pseudocódigo estrutural)
+# Supondo que o modelo 'mlp_ts' já foi treinado com janelas (k-1, k-2, k-24) -> k
+def previsao_recursiva_24h(modelo, dados_iniciais):
+    previsoes = []
+    historico = list(dados_iniciais) # Precisa ter pelo menos as últimas 24h
+    
+    for _ in range(24):
+        # Montar a entrada atual: [PA(k-1), PA(k-2), PA(k-24)]
+        entrada_atual = np.array([[historico[-1], historico[-2], historico[-24]]])
+        
+        # Prever PA(k)
+        pred = modelo.predict(entrada_atual)[0]
+        previsoes.append(pred)
+        
+        # Atualizar o histórico para o próximo passo k
+        historico.append(pred) 
+        
+    return previsoes
+
+# No final, aplicar a função calcular_mape comparando 'previsoes' com os dados reais.
