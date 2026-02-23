@@ -1,0 +1,27 @@
+import pandas as pd
+from sklearn.neural_network import MLPRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+
+# 1. Carregar os dados ( LDR_ball.xlsx)
+df = pd.read_excel('LDR_ball.xlsx')
+X = df[['v1', 'v2']] # Entradas
+y = df['y']          # Saída esperada (polegadas)
+
+# 2. Divisão de treino e teste
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 3. Treinamento do PMC (Prezando pela parcimônia: poucas camadas/neurônios no início)
+mlp_regressor = MLPRegressor(hidden_layer_sizes=(5,), activation='tanh', solver='lbfgs', max_iter=1000)
+mlp_regressor.fit(X_train, y_train)
+
+# 4. Avaliação e Análise
+y_pred = mlp_regressor.predict(X_test)
+print(f"Erro Quadrático Médio (MSE): {mean_squared_error(y_test, y_pred)}")
+
+plt.scatter(y_test, y_pred)
+plt.xlabel("Posição Real (y)")
+plt.ylabel("Posição Estimada pelo PMC")
+plt.title("Análise Crítica: Real vs. Previsto")
+plt.show()
